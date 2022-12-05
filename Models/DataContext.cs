@@ -10,6 +10,7 @@ namespace APIwebPET.Models
         {
             Configuration = configuration;
         }
+
         protected DbSet<Passageiro> Passageiros { get; set; }
 
         
