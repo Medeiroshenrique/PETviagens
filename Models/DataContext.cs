@@ -10,8 +10,12 @@ namespace APIwebPET.Models
         {
             Configuration = configuration;
         }
-
-        protected DbSet<Passageiro> Passageiros { get; set; }
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            var connectionString = Configuration.GetConnectionString("WebApiDatabase");
+            options.UseSqlServer(connectionString);
+        }
+        protected DbSet<Passageiro>? Passageiros { get; set; }
 
         
     }

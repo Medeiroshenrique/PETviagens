@@ -10,13 +10,13 @@ namespace APIwebPET.Controllers
     [ApiController]
     public class PassageiroController : ControllerBase
     {
-        private PassageiroService servico;
+        private static PassageiroService servico=new PassageiroService(new Repositories.PassageiroRopository());
         public PassageiroController() : base()
         {
-            this.servico = new PassageiroService(new Repositories.PassageiroRopository());
+            servico = new PassageiroService(new Repositories.PassageiroRopository());
         }
 
-        [HttpGet("idpassagem")]
+        [HttpGet("{idpassagem}")]
         public IActionResult Get(long idPassagem)
         {
             if (idPassagem < 1 || idPassagem > 5)
@@ -35,7 +35,7 @@ namespace APIwebPET.Controllers
 
         [HttpPost]
         public IActionResult Salvar(Passageiro passageiro)
-        {
+        {passageiro.IdPassagem=null;
             return this.Ok(servico.Salvar(passageiro));
         }
 
@@ -47,7 +47,7 @@ namespace APIwebPET.Controllers
         public IActionResult Excluir(long idPassagem) {
             if (servico.Excluir(idPassagem))
             {
-                return this.Ok(new Mensagem(200, typeof(Passageiro).Name + "essa passagem foi excluída do sistema."));
+                return this.Ok(new Mensagem(200, typeof(Passageiro).Name + " foi excluído do sistema."));
             }
             else
             {

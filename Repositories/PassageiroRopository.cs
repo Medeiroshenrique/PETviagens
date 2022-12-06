@@ -20,12 +20,15 @@ namespace APIwebPET.Repositories
         public List<Passageiro> Listar()
         {
             return this.DC.Set<Passageiro>().ToList();
+            
         }
         public Passageiro Salvar(Passageiro p)
         {
-            this.DC.Set<Passageiro>().Add(p);
-            this.DC.SaveChanges();
-            return p;
+            
+                this.DC.Set<Passageiro>().Add(p);
+                this.DC.SaveChanges();
+                return p;
+            
         }
         public Passageiro Atualizar(Passageiro passageiro)
         {
