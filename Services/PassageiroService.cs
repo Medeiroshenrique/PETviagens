@@ -10,7 +10,7 @@ namespace APIwebPET.Services
             this.Repositorio = repositorio;
         }
 
-        public Passageiro Get(long idPassagem) {
+        public Passageiro? Get(long idPassagem) {
             return this.Repositorio.Get(idPassagem);
         }
 
@@ -23,7 +23,12 @@ namespace APIwebPET.Services
         }
 
         public Passageiro Atualizar(Passageiro passageiro) {
-            return this.Repositorio.Atualizar(passageiro);
+            Passageiro? p = this.Get((long)passageiro.IdPassagem);
+            if (p==null) { 
+                throw new Exception(); 
+            } else {
+                return this.Repositorio.Atualizar(passageiro);
+            } 
         }
 
         public bool Excluir(long idPassagem) {

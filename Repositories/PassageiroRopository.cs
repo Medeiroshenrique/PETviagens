@@ -5,7 +5,7 @@ namespace APIwebPET.Repositories
 {
     public class PassageiroRopository
     {
-        private DataContext DC;
+        protected readonly DataContext DC;
 
         public PassageiroRopository()
         {
@@ -13,9 +13,9 @@ namespace APIwebPET.Repositories
                 .AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json")).Build();
             DC = new DataContext(configuration);
         }
-        public Passageiro? Get(long idPassagem)
+        public Passageiro? Get(long? idPassagem)
         {
-            return this.DC.Set<Passageiro>().Where(p => p.Equals(idPassagem)).FirstOrDefault();
+            return this.DC.Set<Passageiro>().Where(p => p.IdPassagem.Equals(idPassagem)).FirstOrDefault();
         }
         public List<Passageiro> Listar()
         {
@@ -32,21 +32,31 @@ namespace APIwebPET.Repositories
         }
         public Passageiro Atualizar(Passageiro passageiro)
         {
-            Passageiro p = Get((long)passageiro.IdPassagem);
-            p.Nome = passageiro.Nome;
-            p.Sobrenome = passageiro.Sobrenome;
-            p.Sexo = passageiro.Sexo;
-            p.TipoViagem = passageiro.TipoViagem;
-            p.DestinoViagem = passageiro.DestinoViagem;
-            p.EmpresaParceira = passageiro.EmpresaParceira;
-            p.HoraDecolagem = passageiro.HoraDecolagem;
-            p = this.DC.Set<Passageiro>().Update(p).Entity;
-            this.DC.SaveChanges();
-            return p;
+            try
+            {
+                Passageiro? p = Get(passageiro.IdPassagem);
+                if (p==null) { 
+                    throw new Exception(typeof(Passageiro).Name + " com a passagem informada não foi encontrado(a)!");
+                }
+                else
+                {
+                    p.Nome = passageiro.Nome;
+                    p.Sobrenome = passageiro.Sobrenome;
+                    p.Sexo = passageiro.Sexo;
+                    p.TipoViagem = passageiro.TipoViagem;
+                    p.DestinoViagem = passageiro.DestinoViagem;
+                    p.EmpresaParceira = passageiro.EmpresaParceira;
+                    p.HoraDecolagem = passageiro.HoraDecolagem;
+                    p = this.DC.Set<Passageiro>().Update(p).Entity;
+                    this.DC.SaveChanges();
+                    return p;
+                }
+            }
+            catch (Exception ex) { throw new Exception(ex.Message); }
         }
         public bool Excluir(long idPassagem)
         {
-            Passageiro excluido = this.DC.Set<Passageiro>().SingleOrDefault(x => x.IdPassagem == idPassagem);
+            Passageiro excluido = this.Get(idPassagem);
             if (excluido != null)
             {
                 this.DC.Set<Passageiro>().Remove(excluido);

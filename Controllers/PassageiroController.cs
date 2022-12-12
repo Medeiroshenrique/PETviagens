@@ -19,7 +19,7 @@ namespace APIwebPET.Controllers
         [HttpGet("{idpassagem}")]
         public IActionResult Get(long idPassagem)
         {
-            if (idPassagem < 1 || idPassagem > 5)
+            if (idPassagem<1)
             {
                 return this.Ok(new Mensagem(403, "Passageiro não encontrado"));
             }
