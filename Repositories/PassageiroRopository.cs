@@ -1,40 +1,43 @@
 ﻿using APIwebPET.Models;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using PETviagens.Interfaces;
 
 namespace APIwebPET.Repositories
 {
-    public class PassageiroRopository
+    public class PassageiroRopository: IPassageiroRepository
     {
-        protected readonly DataContext DC;
+        private readonly DataContext _dc;
 
-        public PassageiroRopository()
+        public PassageiroRopository(DataContext dc)
         {
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "appsettings.json")).Build();
-            DC = new DataContext(configuration);
+            _dc = dc;
         }
-        public Passageiro? Get(long? idPassagem)
+        
+        
+
+        public async Task<Passageiro?> Get(long? idPassagem)
         {
-            return this.DC.Set<Passageiro>().Where(p => p.IdPassagem.Equals(idPassagem)).FirstOrDefault();
+            return await _dc.Set<Passageiro>().FirstOrDefaultAsync(p => p.IdPassagem == idPassagem);
         }
-        public List<Passageiro> Listar()
+
+        public async Task<List<Passageiro>> Listar()
         {
-            return this.DC.Set<Passageiro>().ToList();
-            
+            return await _dc.Set<Passageiro>().ToListAsync();
+
         }
-        public Passageiro Salvar(Passageiro p)
+
+        public async Task<Passageiro> Salvar(Passageiro p)
         {
-            
-                this.DC.Set<Passageiro>().Add(p);
-                this.DC.SaveChanges();
+            await _dc.Set<Passageiro>().AddAsync(p);
+               await _dc.SaveChangesAsync();
                 return p;
-            
         }
-        public Passageiro Atualizar(Passageiro passageiro)
+
+        public async Task<Passageiro> Atualizar(Passageiro passageiro)
         {
             try
             {
-                Passageiro? p = Get(passageiro.IdPassagem);
+                Passageiro? p = await Get(passageiro.IdPassagem);
                 if (p==null) { 
                     throw new Exception(typeof(Passageiro).Name + " com a passagem informada não foi encontrado(a)!");
                 }
@@ -47,20 +50,21 @@ namespace APIwebPET.Repositories
                     p.DestinoViagem = passageiro.DestinoViagem;
                     p.EmpresaParceira = passageiro.EmpresaParceira;
                     p.HoraDecolagem = passageiro.HoraDecolagem;
-                    p = this.DC.Set<Passageiro>().Update(p).Entity;
-                    this.DC.SaveChanges();
+                    p = _dc.Set<Passageiro>().Update(p).Entity;
+                    await _dc.SaveChangesAsync();
                     return p;
                 }
             }
             catch (Exception ex) { throw new Exception(ex.Message); }
         }
-        public bool Excluir(long idPassagem)
+
+        public async Task<bool> Excluir(long idPassagem)
         {
-            Passageiro excluido = this.Get(idPassagem);
+            var excluido = await Get(idPassagem);
             if (excluido != null)
             {
-                this.DC.Set<Passageiro>().Remove(excluido);
-                this.DC.SaveChanges();
+                _dc.Set<Passageiro>().Remove(excluido);
+                await _dc.SaveChangesAsync();
                 return true;
             }
             return false;
