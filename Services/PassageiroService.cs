@@ -1,38 +1,38 @@
 ﻿using APIwebPET.Models;
-using APIwebPET.Repositories;
+using PETviagens.Interfaces;
 
 namespace APIwebPET.Services
 {
-    public class PassageiroService
+    public class PassageiroService:IPassageiroService
     {
-        private PassageiroRopository Repositorio { get; set; }
-        public PassageiroService(PassageiroRopository repositorio) {
-            this.Repositorio = repositorio;
+        private readonly IPassageiroRepository _repositorio;
+        public PassageiroService(IPassageiroRepository repositorio) {
+            _repositorio = repositorio;
         }
 
-        public Passageiro? Get(long idPassagem) {
-            return this.Repositorio.Get(idPassagem);
+        public async Task<Passageiro?> Get(long idPassagem) {
+            return await _repositorio.Get(idPassagem);
         }
 
-        public List<Passageiro> Listar() {
-            return this.Repositorio.Listar();
+        public async Task<List<Passageiro>> Listar() {
+            return await _repositorio.Listar();
         }
 
-        public Passageiro Salvar(Passageiro passageiro) {
-            return this.Repositorio.Salvar(passageiro);
+        public async Task<Passageiro> Salvar(Passageiro passageiro) {
+            return await _repositorio.Salvar(passageiro);
         }
 
-        public Passageiro Atualizar(Passageiro passageiro) {
-            Passageiro? p = this.Get((long)passageiro.IdPassagem);
+        public async Task<Passageiro> Atualizar(Passageiro passageiro) {
+            Passageiro? p = await Get((long)passageiro.IdPassagem!);
             if (p==null) { 
                 throw new Exception(); 
             } else {
-                return this.Repositorio.Atualizar(passageiro);
+                return await _repositorio.Atualizar(passageiro);
             } 
         }
 
-        public bool Excluir(long idPassagem) {
-            return this.Repositorio.Excluir(idPassagem);
+        public async Task<bool> Excluir(long idPassagem) {
+            return await _repositorio.Excluir(idPassagem);
         }
 
     }
